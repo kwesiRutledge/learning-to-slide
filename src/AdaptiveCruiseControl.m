@@ -3,9 +3,13 @@ classdef AdaptiveCruiseControl
     %   Detailed explanation goes here
     
     properties
-        v0
-        theta
-        m
+        v0;
+        theta;
+        m;
+        Theta;
+        U;
+        dim_x;
+        dim_u;
     end
     
     methods
@@ -17,6 +21,15 @@ classdef AdaptiveCruiseControl
                             1.2567; % Ns/m
                             0.4342];% Ns^2/m^2
             obj.m = 1370; % kg
+            
+            dtheta = [1.0,0.1,0.05];
+            obj.Theta = Polyhedron('lb',-dtheta,'ub',dtheta) + obj.theta;
+
+            obj.U = Polyhedron('lb',-9.8*obj.m,'ub',9.8*obj.m);
+
+            % Dimension
+            obj.dim_x = 2;
+            obj.dim_u = 1;
         end
         
         function dx_dt = dynamics(obj,x,u)

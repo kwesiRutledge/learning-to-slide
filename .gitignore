@@ -130,3 +130,6 @@ dmypy.json
 
 # Ignoring Data + Images in Examples Folder
 examples/scalar/*.png
+
+# Mac Temporary Files
+*.DS_Store

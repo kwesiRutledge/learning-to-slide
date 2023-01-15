@@ -7,7 +7,7 @@ classdef SimpleSystem1
     %   In this case, the parameter theta is a scalar and the two functions
     %   F(x) and G(x) are identical.
     %   We decompose this model into the form
-    %       \dot{x} = f(x) + F(x) \theta + ( g(x) + G(x) \theta) u
+    %       \dot{x} = f(x) + F(x) \theta + ( g(x) + \sum_i \theta_i G_i(x)) u
     %   from our paper
     
     properties
@@ -76,10 +76,11 @@ classdef SimpleSystem1
         end
 
         function G_x = G(obj,x)
-            %G() The function represents the component G(x) in our problem
+            %G() The function represents the set of all G_i(x) in our problem
             %structure.
-            %   Detailed explanation goes here
-            G_x = 1;
+            %   For the scalar system, there is only one of these.
+
+            G_x = {1};
         end
 
         function dx_dt = dynamics(obj,x,u)
@@ -89,9 +90,16 @@ classdef SimpleSystem1
             % Constants
             theta = obj.theta;
 
+            % Collect G
+            G = obj.G(x);
+            sum_Gi = theta(1) * G{1};
+            for theta_dim = [2:length(theta)]
+                sum_Gi = sum_Gi + theta(theta_dim) * G{theta_dim};
+            end
+
             % Compute derivative
             dx_dt = obj.f(x) + obj.F(x) * theta + ...
-                ( obj.g(x) + obj.G(x) * theta )* u;
+                ( obj.g(x) + sum_Gi )* u;
         end
     end
 end

@@ -33,7 +33,7 @@ function [x,u_history, V_history] = simulate_ca_w_decay(ca_sys, V_symb, T_sim, X
             Vi_k = double(subs(V_symb,struct('x1', xi_k(1), 'x2', xi_k(2))));
             dVi_k_dx = double(subs(dV_dx_symb,struct('x1', xi_k(1), 'x2', xi_k(2))));
     
-            [ui_k, optim_out] = CLF_control_ca_systems(xi_k , Vi_k, dVi_k_dx, ca_sys, decay_rate);
+            [ ui_k, optim_out ] = CLF_control_ca_systems(xi_k , Vi_k, dVi_k_dx, ca_sys, decay_rate);
             xi_kp1 = xi_k + ca_sys.dynamics(xi_k,ui_k)*dt;
     
             Vi_kp1 = double(subs(V_symb,struct('x1', xi_kp1(1), 'x2', xi_kp1(2))));
