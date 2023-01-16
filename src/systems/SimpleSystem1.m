@@ -14,6 +14,7 @@ classdef SimpleSystem1
         Theta;
         theta;
         x;
+        U;
     end
     
     methods
@@ -24,6 +25,7 @@ classdef SimpleSystem1
             %Usage:
             %   system1 = SimpleSystem(Polyhedron('lb',0.5,'ub',0.8));
             %   system1 = SimpleSystem(Polyhedron('lb',0.5,'ub',0.8),'theta',0.7)
+            %   system1 = SimpleSystem(Theta,theta)
             
             % Input Checking
             if nargin < 1
