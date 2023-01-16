@@ -138,3 +138,6 @@ examples/scalar/*.png
 examples/scalar/images/*.png
 examples/scalar/*.png
 examples/scalar/data/*.mat
+
+examples/taylor_ames/images/*.png
+examples/taylor_ames/*.png

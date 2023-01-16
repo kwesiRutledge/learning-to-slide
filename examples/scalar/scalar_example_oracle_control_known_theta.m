@@ -83,7 +83,7 @@ SOL_V = sosgetsol(Program1,V); %Getting solution for V
 figure;
 ezplot(SOL_V) % Plot the lyapunov function
 ylabel('$$V(x)$$','Interpreter','latex')
-saveas(gcf,'oracle-control-knownTheta-V.png')
+saveas(gcf,'images/oracle-control-knownTheta-V.png')
 
 % Plot the lyapunov function over time.
 x0s = [-1.0,-0.6,0.1,1.0];
@@ -124,4 +124,7 @@ subplot(2,1,2)
 plot([0:dt:T],V_h)
 xlabel('Time')
 ylabel('V_t')
-saveas(gcf,'oracle-control-knownTheta-simulation.png')
+saveas(gcf,'images/oracle-control-knownTheta-simulation.png')
+
+date_string = datestr(now,'ddmmmyyyy-HHMM');
+save(['data/scalar-capa2-knownTheta-oracleControl-' date_string '.mat' ])

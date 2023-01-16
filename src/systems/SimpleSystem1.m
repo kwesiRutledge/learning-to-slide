@@ -15,6 +15,11 @@ classdef SimpleSystem1
         theta;
         x;
         U;
+        X0;
+
+        dim_x;
+        dim_u;
+        dim_theta;
     end
     
     methods
@@ -23,36 +28,22 @@ classdef SimpleSystem1
             %   Provide the unknown parameter set
             %   Polyhedron() object
             %Usage:
-            %   system1 = SimpleSystem(Polyhedron('lb',0.5,'ub',0.8));
-            %   system1 = SimpleSystem(Polyhedron('lb',0.5,'ub',0.8),'theta',0.7)
-            %   system1 = SimpleSystem(Theta,theta)
+            %   system1 = SimpleSystem('Theta',Polyhedron('lb',0.5,'ub',0.8));
+            %   system1 = SimpleSystem('Theta',Polyhedron('lb',0.5,'ub',0.8),'theta',0.7)
+            %   system1 = SimpleSystem('Theta',Theta,'theta',theta)
             
-            % Input Checking
-            if nargin < 1
-                error(['Require at least one input to SimpleSystem! Received ' num2str(nargin)])
-            end
+            [ Theta , U , X0, ss_settings ] = input_processing_SimpleSystem1(varargin{:});
 
-            % Extract necessary arguments
-            obj.Theta = varargin{1};
+            
+            obj.Theta = Theta;
+            obj.theta = ss_settings.theta;
 
-            % Assign defaults
-            convex_comb_vector = exprnd(1,length(obj.Theta.V),1);
-            convex_comb_vector = convex_comb_vector/sum(convex_comb_vector);
-            obj.theta = obj.Theta.V' * convex_comb_vector;
-
-
-            % If there is more than one input, then accept the other
-            % values.
-            arg_index = 2;
-            if nargin > 1
-                switch varargin{arg_index}
-                    case 'theta'
-                        obj.theta = varargin{arg_index+1};
-                        arg_index = arg_index + 2;
-                    otherwise
-                        error(['Unexpected input: ' varargin{arg_index} ])
-                end
-            end
+            obj.U = U;
+            obj.X0 = X0;
+            % Dimensions of State and input
+            obj.dim_x = 1;
+            obj.dim_u = 1;
+            obj.dim_theta = 1;
 
         end
         
@@ -104,5 +95,43 @@ classdef SimpleSystem1
                 ( obj.g(x) + sum_Gi )* u;
         end
     end
+end
+
+function [Theta, U , X0, ss_settings] = input_processing_SimpleSystem1(varargin)
+    %Description:
+    %   Process the inputs given to ExternalBehaviorSet() constructor.
+
+    %% Set Defaults
+
+    ss_settings = struct( ...
+        'Theta', Polyhedron('lb',0.5,'ub',0.8), ...
+        'theta', sampleFromPolytope(Polyhedron('lb',0.5,'ub',0.8)), ...
+        'U', Polyhedron('lb',-10,'ub',10), ...
+        'X0', Polyhedron('lb',1.0,'ub',2.0) ...
+    );
+
+    %% Algorithm
+    if nargin > 0
+        v_index = 1;
+        switch varargin{v_index}
+            case 'Theta'
+                ss_settings.Theta = varargin{v_index+1};
+                v_index = v_index + 2;
+            case 'theta'
+                ss_settings.theta = varargin{v_index+1};
+                if ~ss_settings.Theta.contains(ss_settings.theta)
+                    error(['The theta input that was given is not inside the set ''Theta''. Please propose a new one'])
+                end
+                v_index = v_index + 2;
+            otherwise
+                error(['Unexpected input to SimpleSystem1: ' varargin{v_index} ])
+        end
+
+    end
+
+    %% Create Outputs
+    Theta = ss_settings.Theta;
+    U = ss_settings.U;
+    X0 = ss_settings.X0;
 end
 
