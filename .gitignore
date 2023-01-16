@@ -141,3 +141,4 @@ examples/scalar/data/*.mat
 
 examples/taylor_ames/images/*.png
 examples/taylor_ames/*.png
+examples/taylor_ames/data/*.mat
