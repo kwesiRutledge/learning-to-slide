@@ -38,9 +38,9 @@ function [ u_opt, optim_out ] = CLF_control_capa1_systems( x, Va, dVa_dx, dVa_dt
     u = sdpvar(dim_u,1);
     constraints = [];
 
-    Lf_V = dVa_dx * capa1_sys.f(x);
-    Lg_V = dVa_dx * capa1_sys.g(x);
-    LF_V = dVa_dx * capa1_sys.F(x);
+    Lf_Va = dVa_dx * capa1_sys.f(x);
+    Lg_Va = dVa_dx * capa1_sys.g(x);
+    LF_Va = dVa_dx * capa1_sys.F(x);
     
     % Dynamics Constraints
     for theta_index = 1:n_VTheta
@@ -50,7 +50,7 @@ function [ u_opt, optim_out ] = CLF_control_capa1_systems( x, Va, dVa_dx, dVa_dt
         dVa_dth_xv = double(subs(dVa_dth_symb, state_parameter_pair_to_struct(x,v_Theta)));
 
         lyapunov_function_decrease_constraint = ...
-            [ Lf_V + LF_V * (v_Theta + Gamma_in*dVa_dth_xv') + Lg_V*u <= - decay_rate * Va];
+            [ Lf_Va + LF_Va * (v_Theta + Gamma_in*dVa_dth_xv') + Lg_Va*u <= - decay_rate * Va];
 
         constraints = constraints + lyapunov_function_decrease_constraint;
 

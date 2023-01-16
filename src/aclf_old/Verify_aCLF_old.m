@@ -32,6 +32,8 @@ function [ Va, dVa_dx_cand, dVa_dth_cand ] = Verify_aCLF_old( sym_x, sym_theta ,
 
     decay_rate = 0;
 
+    eps0 = 0.1;
+
     % Create Program
     % ==============
     syms offset0;
@@ -46,12 +48,11 @@ function [ Va, dVa_dx_cand, dVa_dth_cand ] = Verify_aCLF_old( sym_x, sym_theta ,
     % Va should be p.d. in x, but not necessarily in theta
 
     monom1 = monomials([sym_x],[0,4]);
-    [Program1, pd1] = sossosvar(Program1,monom1);
+%     [Program1, pd1] = sossosvar(Program1,monom1);
 
-    monom2 = monomials([sym_x;sym_theta],[0:2]);
-    [Program1,u1] = sospolyvar(Program1,monom2);
+    pd2 = eps0*sym_x'*sym_x;
 
-    %Program1 = sosineq( Program1 , Va_cand - pd1 ); % Va_cand - pd1 >= 0
+    Program1 = sosineq( Program1 , Va_cand - pd2 ); % Va_cand - pd1 >= 0
 
     % Va satisfies gradient condition
 

@@ -133,3 +133,8 @@ examples/scalar/*.png
 
 # Mac Temporary Files
 *.DS_Store
+
+# Experiment files
+examples/scalar/images/*.png
+examples/scalar/*.png
+examples/scalar/data/*.mat

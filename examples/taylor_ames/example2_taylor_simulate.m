@@ -11,17 +11,18 @@ addpath(genpath('../../src/'))
 
 %% Constants
 acc1 = AdaptiveCruiseControl();
+acc2 = AdaptiveCruiseControlwNominal();
 
 %% Plot Simple Trajectories of the System
 x0 = [15;26];
 tspan1 = [0,4];
 [t1,y1] = ode45( ...
-    @(t,x) acc1.dynamics(x,0), ...
+    @(t,x) acc2.dynamics(x,0), ...
     tspan1, x0 ...
     );
 
 [t2,y2] = ode45( ...
-    @(t,x) acc1.dynamics(x,-norm(x,2)*0.2), ...
+    @(t,x) acc2.dynamics(x,-norm(x,2)*0.2), ...
     tspan1, x0 ...
     );
 
@@ -47,6 +48,8 @@ ylabel('x')
 axis(matching_axis1)
 title('Slight corrective (u = -0.2x) trajectory')
 
+saveas(gcf,'taylor_ames_acc2_system_dummy_trajectories.png')
+
 %% Use the CLF-based controller for this work with known theta
 %  ===========================================================
 
@@ -68,21 +71,22 @@ v_star = acc1.v0;
 % Create a dummy program from the tutorial for SOSTools
 syms v1 D1 f1 f2 f3 real;
 
-u_min = -9.8*acc1.m;
+u_min = -9.8*acc2.m;
 
 Program1 = sosprogram([v1;D1]);
 monom1 = monomials([v1;D1],[1:4]);
 [Program1,l1] = sospolyvar(Program1,monom1);
 [Program1,l2] = sospolyvar(Program1,monom1);
 ha = alpha.^2 - (D1 - 1.8*v1 - alpha).^2;
-Va_symb = (D1 - 1.8*v1).^2;
+% Va_symb = (D1 - 1.8*v1).^2;
+Va_symb = D1.^2 + v1.^2;
 
 dV_dx_symb = gradient(Va_symb,[v1;D1])';
 
 % Simulate
-N_sims = 2;
-T_sim = 20;
-dt = 0.01;
+N_sims = 1;
+T_sim = 2000;
+dt = 0.1;
 
 decay_rate = 0;
 
@@ -93,8 +97,8 @@ X0 = Polyhedron('lb',[10,20],'ub',[20,40]);
 x0 = sampleFromPolytope(X0,N_sims);
 th0 = sampleFromPolytope(acc1.Theta, N_sims);
 
-[x, th0, V_history, th_history, u_history] = simulate_capa1_w_decay( ...
-    acc1, ...
+[x, th0, V_history, th_history, th_star, u_history] = simulate_capa1_w_decay( ...
+    acc2, ...
     Va_symb, ...
     T_sim, X0 , dt, ...
     Gamma_in, ...
@@ -111,6 +115,7 @@ for x_index = 1:2
         ylabel(['$$x_' num2str(x_index) '(k)$$'],'Interpreter','latex')
     end
 end
+saveas(gcf,'taylor_ames_controlled_trajectories.png')
 
 figure;
 hold on;
@@ -119,3 +124,34 @@ for sim_index = 1:N_sims
     xlabel('Time Index (k)')
     ylabel(['$$V(x(k))$$'],'Interpreter','latex')
 end
+saveas(gcf,'taylor_ames_acc2_V_traj.png')
+
+figure;
+for theta_index = 1:3
+    subplot(3,1,theta_index);
+    hold on;
+    for sim_index = 1:N_sims
+        plot([0:T_sim],th_history{sim_index}(theta_index,:))
+        xlabel('Time Index (k)')
+        ylabel(['$$\theta_' num2str(theta_index) '(k)$$'], 'Interpreter','latex')
+    end
+end
+saveas(gcf,'taylor_ames_acc2_theta_trajectories.png')
+
+figure;
+hold on;
+for sim_index = 1:N_sims
+    norm_history = zeros(1,T_sim+1);
+    for k = 1:T_sim+1
+        norm_history(k) = norm(th_history{sim_index}(:,k) - th_star(:,sim_index));
+    end
+
+    plot( [0:T_sim], norm_history )   
+end
+xlabel('Time Index (k)')
+ylabel(['$$\|\hat{\theta}(k) - \theta^*\|$$'], 'Interpreter','latex')
+saveas(gcf,'taylor_ames_acc2_theta_error.png')
+
+date_string = datestr(now,'ddmmmyyyy-HHMM');
+save(['data/taylor-ames-simulation-data-' date_string '.mat' ])
+

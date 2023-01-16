@@ -15,6 +15,7 @@ addpath(genpath('../../src/'))
 
 %% Constants
 acc1 = AdaptiveCruiseControl();
+acc2 = AdaptiveCruiseControlwNominal();
 
 %% Plot Simple Trajectories of the System
 x0 = [15;26];
@@ -80,5 +81,6 @@ monom1 = monomials([v1;D1],[1:4]);
 [Program1,l2] = sospolyvar(Program1,monom1);
 ha = alpha.^2 - (D1 - 1.8*v1 - alpha).^2;
 Va = (D1 - 1.8*v1).^2;
+Va1 = D1.^2 + v1.^2;
 
-Verify_aCLF_old([v1;D1],[f1;f2;f3],Va, acc1, Gamma)
+Verify_aCLF_old([v1;D1],[f1;f2;f3],Va1, acc2, Gamma)

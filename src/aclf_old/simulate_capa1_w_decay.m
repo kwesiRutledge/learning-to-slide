@@ -1,4 +1,4 @@
-function [x, th0, V_history, th_history, u_history] = simulate_capa1_w_decay(capa1_sys, Va_symb, T_sim, X0 , dt, Gamma, N_sims, decay_rate, state_names, theta_names)
+function [x, th0, V_history, th_history, th_star, u_history] = simulate_capa1_w_decay(capa1_sys, Va_symb, T_sim, X0 , dt, Gamma, N_sims, decay_rate, state_names, theta_names)
     %SIMULATE_CAPA1_W_DECAY Simulates the control parameter affine system
     %(version 1) with the aCLF Va_symb
     %Usage
@@ -53,13 +53,14 @@ function [x, th0, V_history, th_history, u_history] = simulate_capa1_w_decay(cap
     % Sample
     x0 = sampleFromPolytope(X0,N_sims);
     th0 = sampleFromPolytope(capa1_sys.Theta, N_sims);
+    th_star = sampleFromPolytope(capa1_sys.Theta, N_sims);
     
     x = {}; u_history = {}; V_history = {}; th_history = {};
     for sim_index = 1:N_sims
         %Set Initial Conditions
         x_i = [x0(:,sim_index)];
         th_i = [th0(:,sim_index)];
-        capa1_sys.theta = th_i;
+        capa1_sys.theta = th_star(:,sim_index); %th_i;
         %
 
         u_i = [];
@@ -88,8 +89,14 @@ function [x, th0, V_history, th_history, u_history] = simulate_capa1_w_decay(cap
                 xi_k , ...
                 Vi_k, dVi_k_dx, dVa_dth_symb, ...
                 capa1_sys, decay_rate, Gamma);
+
+            if optim_out.problem ~= 0
+                warning('Warning! CLF control optimization was not feasible!')
+                optim_out;
+            end
+
             xi_kp1 = xi_k + capa1_sys.dynamics(xi_k,ui_k)*dt;
-            thi_kp1 = thi_k; % TODO: Write estimator logic
+            thi_kp1 = thi_k + aCLF_estimation_capa1_systems(xi_k,dVi_k_dx,capa1_sys)*dt; 
     
             Vi_kp1 = double( ...
                 subs( ...
