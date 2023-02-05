@@ -5,7 +5,9 @@ function [x,u_history, V_history] = simulate_ca_w_decay(ca_sys, V_symb, T_sim, X
     % Constants
     decay_rate = 1;
 
-    T_sim = 10; %Number of steps to simulate system forward.
+    if ~exist('T_sim')
+        T_sim = 10; %Number of steps to simulate system forward.
+    end
     dt = 0.1;
     
     if ~exist('N_sims')
