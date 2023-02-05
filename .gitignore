@@ -134,7 +134,7 @@ examples/scalar/*.png
 # Mac Temporary Files
 *.DS_Store
 
-# Experiment files
+# Example files
 examples/scalar/images/*.png
 examples/scalar/*.png
 examples/scalar/data/*.mat
@@ -142,3 +142,9 @@ examples/scalar/data/*.mat
 examples/taylor_ames/images/*.png
 examples/taylor_ames/*.png
 examples/taylor_ames/data/*.mat
+
+# Experiment data and images
+experiments/scalar_reachability1/*.png
+
+# MATLAB Temporary files
+*.asv
