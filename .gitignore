@@ -150,6 +150,7 @@ experiments/full_reachability1/*.png
 experiments/sliding_animation1/*.mp4
 experiments/sliding_animation1/*.asv
 experiments/scalar_aclf_V_trajectories1/data/*.mat
+experiments/scalar_aclf_V_trajectories1/images/*.png
 
 # MATLAB Temporary files
 *.asv
