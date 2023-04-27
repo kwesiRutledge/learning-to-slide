@@ -149,6 +149,11 @@ experiments/scalar_reachability1/*.png
 experiments/full_reachability1/*.png
 experiments/sliding_animation1/*.mp4
 experiments/sliding_animation1/*.asv
+experiments/scalar_aclf_V_trajectories1/data/*.mat
 
 # MATLAB Temporary files
 *.asv
+
+# Testing
+tests/logs/*.rlp
+tests/*.rlp
