@@ -109,6 +109,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+sliding_env1/*
 
 # Spyder project settings
 .spyderproject
@@ -145,6 +146,7 @@ examples/taylor_ames/data/*.mat
 
 # Experiment data and images
 experiments/scalar_reachability1/*.png
+experiments/full_reachability1/*.png
 
 # MATLAB Temporary files
 *.asv
