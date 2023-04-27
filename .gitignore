@@ -147,6 +147,8 @@ examples/taylor_ames/data/*.mat
 # Experiment data and images
 experiments/scalar_reachability1/*.png
 experiments/full_reachability1/*.png
+experiments/sliding_animation1/*.mp4
+experiments/sliding_animation1/*.asv
 
 # MATLAB Temporary files
 *.asv
