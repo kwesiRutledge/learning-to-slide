@@ -20,6 +20,11 @@ classdef SimpleSystem1
         dim_x;
         dim_u;
         dim_theta;
+
+        state_names;
+        state_symbs;
+        parameter_names;
+        parameter_symbs;
     end
     
     methods
@@ -33,7 +38,6 @@ classdef SimpleSystem1
             %   system1 = SimpleSystem('Theta',Theta,'theta',theta)
             
             [ Theta , U , X0, ss_settings ] = input_processing_SimpleSystem1(varargin{:});
-
             
             obj.Theta = Theta;
             obj.theta = ss_settings.theta;
@@ -44,6 +48,14 @@ classdef SimpleSystem1
             obj.dim_x = 1;
             obj.dim_u = 1;
             obj.dim_theta = 1;
+
+            % Names of states
+            obj.state_names = {'x'};
+            obj.parameter_names = {'theta_h'};
+
+            % Symbolic States
+            obj.state_symbs = [sym(obj.state_names{1}, 'real')];
+            obj.parameter_symbs = [sym(obj.parameter_names{1}, 'real')];
 
         end
         
@@ -93,6 +105,20 @@ classdef SimpleSystem1
             % Compute derivative
             dx_dt = obj.f(x) + obj.F(x) * theta + ...
                 ( obj.g(x) + sum_Gi )* u;
+        end
+
+        function Va_out = eval_Va(obj, Va_symbolic, x, theta_hat)
+            %Va() The function represents the component Va(x,theta_hat) for this dynamical system.
+            %
+            %Assumes:
+            %   The variable names in the symbolic expression V_symbolic are
+            %   the ones defined in x_names and theta_names.
+            
+            Va_out = double( ...
+                subs( ...
+                    Va_symbolic, ...
+                    state_parameter_pair_to_struct( x, theta_hat, obj.state_names, obj.parameter_names ) ...
+                ));
         end
     end
 end

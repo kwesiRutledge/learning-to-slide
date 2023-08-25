@@ -12,6 +12,7 @@ addpath(genpath('../../src/'))
 Theta_lb = 0.5; Theta_ub = 0.85;
 Theta1 = Polyhedron('lb',Theta_lb,'ub',Theta_ub);
 scalar_system = SimpleSystem1('Theta',Theta1);
+scalar_system.U = scalar_system.U * 2;
 
 %% Plot Simple Trajectories of the System
 tspan1 = [0,4];
@@ -97,9 +98,9 @@ saveas(gcf,'images/scalar-capa2-full-aclf-V.png')
 
 %% Simulate the System and Plot The Controller's performance
 
-T_sim = 50;
-N_sims = 5;
-decay_rate = 0;
+T_sim = 30;
+N_sims = 2;
+decay_rate = 1;
 X0 = Polyhedron('lb',1.0,'ub',2.0);
 dt = 0.1;
 

@@ -1,4 +1,4 @@
-function [ u_opt , optim_out ] = aCLF_control_capa2( x, Va, dVa_dx, dVa_dth_symb, capa2_sys, decay_rate, Gamma_in, state_names, theta_names )
+function [ u_opt , optim_out ] = aCLF_control_capa2( x, Va, dVa_dx, dVa_dth_symb, capa2_sys, decay_rate, Gamma_in, state_names, theta_names, Theta )
     %CLF_CONTROL_CAPA2 Computes aCLF control of the system
     %Description
     %
@@ -54,13 +54,16 @@ function [ u_opt , optim_out ] = aCLF_control_capa2( x, Va, dVa_dx, dVa_dth_symb
         end
     end
 
+    if ~exist("Theta")
+        Theta = capa2_sys.Theta;
+    end
+
 
     % Constants
     settings_in = sdpsettings('verbose',0);
     dim_x = capa2_sys.dim_x;
     dim_u = capa2_sys.dim_u;
 
-    Theta = capa2_sys.Theta;
     dim_theta = Theta.Dim;
     V_Theta = Theta.V;
     n_VTheta = size(V_Theta,1);
@@ -94,9 +97,9 @@ function [ u_opt , optim_out ] = aCLF_control_capa2( x, Va, dVa_dx, dVa_dth_symb
                 state_parameter_pair_to_struct(x,v_Theta,state_names,theta_names) ...
             ));
 
-        sum_Gi = v_Theta(1)*LG_Va{1};
+        sum_Gi = ( v_Theta(1) + Gamma_in(1,:)*dVa_dth_xv' )*LG_Va{1};
         for theta_index = 2:dim_theta
-            sum_Gi = sum_Gi + v_Theta(theta_index) * LG_Va{theta_index};
+            sum_Gi = sum_Gi + (v_Theta(theta_index) + Gamma_in(theta_index,:)*dVa_dth_xv') * LG_Va{theta_index};
         end
 
         lyapunov_function_decrease_constraint = ...
